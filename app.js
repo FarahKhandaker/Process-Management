@@ -26,7 +26,7 @@ function createProcess() {
         logs: logs
     };
 
-    console.log(`process created with PID ${process.pid}, at time ${new Date()}`);
+    console.log(`Process created with PID: ${process.pid}, at: ${moment(new Date()).format('h:mm:ss a, D.MM.YYYY')}`);
 
     process.stdout.on('data', () => {
         logs.push(moment(new Date()).format('h:mm:ss a, D.MM.YYYY')); // push time logs to the logs array
@@ -45,7 +45,7 @@ app.post('/create-process', (req, res) => {
     try {
         const createdProcess = createProcess();
         const {logs, ...rest} = createdProcess
-        res.json(rest);
+        res.status(200).json(rest);
     }
     catch {
         res.status(404).json({ message: 'Process not created.' })
@@ -61,7 +61,7 @@ app.get('/get-all', (req, res) => {
                 processInfoArray.push({ pid: processPid, creationTime: creationTime });
             }
         }
-        res.json(processInfoArray);
+        res.status(200).json(processInfoArray);
     } catch (error) {
         res.status(404).json({ message: 'No process found.', error: error.message });
     }
@@ -70,7 +70,7 @@ app.get('/get-all', (req, res) => {
 app.get('/get-single/:id', (req, res) => {
     try {
         const { id } = req.params;
-        res.json({logs : allProcesses[id].logs })
+        res.status(200).json({logs : allProcesses[id].logs })
     }
     catch {
         res.status(404).json({ message: 'Process not found.' })
@@ -82,7 +82,7 @@ app.delete('/delete-process/:id', (req, res) => {
         const { id } = req.params;
         if(Object.keys(processes).includes(id)) {
             processes[id].kill();
-            res.send(`'${id}' the process has been successfully deleted`)
+            res.status(200).send(`The process with PID: '${id}' has been successfully deleted`)
         }
     }
     catch {
